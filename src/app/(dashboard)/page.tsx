@@ -1,5 +1,56 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import { CalendarView } from "@/components/calendar/calendar-view";
+
+import { supabase } from "@/lib/supabase";
+
+type Coordination = {
+  id: string;
+  coordination_date: string;
+};
+
 export default function Home() {
+  const [todayCount, setTodayCount] =
+    useState(0);
+
+  useEffect(() => {
+    async function loadStats() {
+      const today = new Date()
+        .toISOString()
+        .split("T")[0];
+
+      const { data, error } =
+        await supabase
+          .from("coordinations")
+          .select("id, coordination_date");
+
+      if (error) {
+        console.error(
+          "ERROR CARGANDO:",
+          error
+        );
+
+        return;
+      }
+
+      const coordinations =
+        (data as Coordination[]) || [];
+
+      const todayItems =
+        coordinations.filter(
+          (item) =>
+            item.coordination_date ===
+            today
+        );
+
+      setTodayCount(todayItems.length);
+    }
+
+    loadStats();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div>
@@ -19,7 +70,7 @@ export default function Home() {
           </p>
 
           <h2 className="mt-3 text-3xl font-bold text-slate-100">
-            0
+            {todayCount}
           </h2>
         </div>
 
@@ -29,7 +80,7 @@ export default function Home() {
           </p>
 
           <h2 className="mt-3 text-3xl font-bold text-amber-400">
-            0
+            -
           </h2>
         </div>
 
@@ -39,7 +90,7 @@ export default function Home() {
           </p>
 
           <h2 className="mt-3 text-3xl font-bold text-emerald-400">
-            0
+            -
           </h2>
         </div>
       </div>
