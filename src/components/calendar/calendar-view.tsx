@@ -9,6 +9,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -34,6 +35,7 @@ type Coordination = {
     categoria: string;
     medio: string;
     observaciones: string;
+    created_by?: string;
 };
 
 const initialForm = {
@@ -58,6 +60,9 @@ export function CalendarView() {
 
     const [selectedCoordination, setSelectedCoordination] =
         useState<Coordination | null>(null);
+
+    const [deleteModalOpen, setDeleteModalOpen] =
+        useState(false);
 
     const [editingId, setEditingId] =
         useState<string | null>(null);
@@ -93,6 +98,9 @@ export function CalendarView() {
 
     const [contactMethods, setContactMethods] =
         useState<string[]>([]);
+
+    const [userName, setUserName] =
+        useState("");
 
     function handleDateClick(info: { dateStr: string }) {
         setSelectedDate(info.dateStr);
@@ -184,6 +192,8 @@ export function CalendarView() {
                     item.medio || "WhatsApp",
                 observaciones:
                     item.observations || "",
+                created_by:
+                    item.created_by || "",
             }));
 
         setCoordinations(formattedData);
@@ -255,6 +265,26 @@ export function CalendarView() {
 
     useEffect(() => {
         fetchConfigurations();
+
+        async function loadUser() {
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
+
+            if (!session) return;
+
+            const { data } = await supabase
+                .from("profiles")
+                .select("name")
+                .eq("id", session.user.id)
+                .single();
+
+            if (data?.name) {
+                setUserName(data.name);
+            }
+        }
+
+        loadUser();
     }, []);
 
     useEffect(() => {
@@ -292,6 +322,30 @@ export function CalendarView() {
         });
 
         setOpenForm(true);
+    }
+
+    async function handleDeleteCoordination() {
+        if (!selectedCoordination) return;
+
+        const { error } = await supabase
+            .from("coordinations")
+            .delete()
+            .eq("id", selectedCoordination.id);
+
+        if (error) {
+            console.error(
+                "Error eliminando:",
+                error
+            );
+
+            return;
+        }
+
+        setDeleteModalOpen(false);
+
+        setSelectedCoordination(null);
+
+        await fetchCoordinations();
     }
 
     async function handleSave() {
@@ -344,6 +398,7 @@ export function CalendarView() {
                         form.observaciones,
                     coordination_date:
                         selectedDate,
+                    created_by: userName,
                 });
 
             if (error) {
@@ -499,13 +554,20 @@ export function CalendarView() {
                                                                         </div>
                                                                     </div>
 
-                                                                    <span
-                                                                        className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(
-                                                                            coordination.estado
-                                                                        )}`}
-                                                                    >
-                                                                        {coordination.estado}
-                                                                    </span>
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="rounded-full bg-[#1e293b] px-3 py-1 text-xs font-medium text-slate-300">
+                                                                            {coordination.created_by ||
+                                                                                "Sin usuario"}
+                                                                        </div>
+
+                                                                        <span
+                                                                            className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(
+                                                                                coordination.estado
+                                                                            )}`}
+                                                                        >
+                                                                            {coordination.estado}
+                                                                        </span>
+                                                                    </div>
                                                                 </button>
                                                             ))}
                                                         </div>
@@ -602,12 +664,21 @@ export function CalendarView() {
                                         }
                                     />
 
-                                    <button
-                                        onClick={openEditModal}
-                                        className="w-full rounded-xl bg-[#1d4ed8] px-4 py-3 text-sm font-medium text-white transition hover:bg-[#2563eb]"
-                                    >
-                                        Editar coordinación
-                                    </button>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={openEditModal}
+                                            className="flex-1 rounded-xl bg-[#1d4ed8] px-4 py-3 text-sm font-medium text-white transition hover:bg-[#2563eb]"
+                                        >
+                                            Editar coordinación
+                                        </button>
+
+                                        <button
+                                            onClick={handleDeleteCoordination}
+                                            className="rounded-xl bg-red-500/20 px-4 py-3 text-sm font-medium text-red-400 transition hover:bg-red-500/30"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )}
