@@ -107,9 +107,7 @@ export default function Home() {
             </p>
           </div>
 
-          <button className="rounded-xl bg-[#1d4ed8] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#2563eb]">
-            Nueva coordinación
-          </button>
+
         </div>
 
         <div className="mt-6 rounded-2xl border border-[#1e293b] bg-[#0f172a] p-4">

@@ -68,6 +68,18 @@ export function CalendarView() {
     const [deleteModalOpen, setDeleteModalOpen] =
         useState(false);
 
+
+
+    const [
+        duplicateTicketModalOpen,
+        setDuplicateTicketModalOpen,
+    ] = useState(false);
+
+    const [
+        duplicateTicketNumber,
+        setDuplicateTicketNumber,
+    ] = useState("");
+
     const [editingId, setEditingId] =
         useState<string | null>(null);
 
@@ -75,6 +87,9 @@ export function CalendarView() {
 
     const [coordinations, setCoordinations] =
         useState<Coordination[]>([]);
+
+    const [searchTerm, setSearchTerm] =
+        useState("");
 
     const [zones, setZones] = useState<string[]>(
         []
@@ -142,10 +157,31 @@ export function CalendarView() {
         }
     }
 
+    const filteredCoordinations =
+        coordinations.filter((coordination) => {
+            if (!searchTerm.trim()) return true;
+
+            const search =
+                searchTerm.toLowerCase();
+
+            return [
+                coordination.ticket ?? "",
+                coordination.cliente ?? "",
+                coordination.estado ?? "",
+                coordination.categoria ?? "",
+                coordination.cuadrilla ?? "",
+                coordination.created_by ?? "",
+                coordination.zona ?? "",
+            ]
+                .join(" ")
+                .toLowerCase()
+                .includes(search);
+        });
+
     const groupedCoordinations = useMemo(() => {
         const groups: Record<string, Coordination[]> = {};
 
-        coordinations.forEach((coordination) => {
+        filteredCoordinations.forEach((coordination) => {
             const key =
                 coordination.cuadrilla || "Sin cuadrilla asignada";
 
@@ -157,7 +193,7 @@ export function CalendarView() {
         });
 
         return groups;
-    }, [coordinations]);
+    }, [filteredCoordinations]);
 
     async function fetchCoordinations() {
         const { data, error } = await supabase
@@ -385,6 +421,31 @@ export function CalendarView() {
     async function handleSave() {
         if (!form.ticket.trim()) return;
 
+        if (!editingId) {
+            const { data: existingTicket } =
+                await supabase
+                    .from("coordinations")
+                    .select("id")
+                    .eq("ticket", form.ticket)
+                    .eq(
+                        "coordination_date",
+                        selectedDate
+                    )
+                    .maybeSingle();
+
+            if (existingTicket) {
+                setDuplicateTicketNumber(
+                    form.ticket
+                );
+
+                setDuplicateTicketModalOpen(
+                    true
+                );
+
+                return;
+            }
+        }
+
         if (editingId) {
             const { error } = await supabase
                 .from("coordinations")
@@ -516,6 +577,18 @@ export function CalendarView() {
                                 >
                                     Nueva coordinación
                                 </button>
+                            </div>
+
+                            <div className="mt-4 mb-4">
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    placeholder="Buscar ticket, cliente, cuadrilla, estado, categoría o usuario..."
+                                    className="w-full rounded-xl border border-[#334155] bg-[#111827] px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-[#2563eb] focus:outline-none"
+                                />
                             </div>
 
                             <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-3 pb-[220px]">
@@ -710,6 +783,9 @@ export function CalendarView() {
                                                 </AccordionItem>
                                             )
                                         )}
+
+
+
                                 </Accordion>
                             </div>
                         </div>
@@ -969,6 +1045,42 @@ export function CalendarView() {
                             className="rounded-xl bg-[#1d4ed8] px-5 py-3 font-medium text-white transition hover:bg-[#2563eb]"
                         >
                             Guardar coordinación
+                        </button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={duplicateTicketModalOpen}
+                onOpenChange={
+                    setDuplicateTicketModalOpen
+                }
+            >
+                <DialogContent className="max-w-md border border-[#1e293b] bg-[#0f172a]">
+                    <DialogHeader>
+                        <DialogTitle className="text-slate-100">
+                            Ticket duplicado
+                        </DialogTitle>
+
+                        <DialogDescription className="text-slate-400">
+                            Ya existe una coordinación para el ticket{" "}
+                            <span className="font-semibold text-slate-100">
+                                {duplicateTicketNumber}
+                            </span>{" "}
+                            en la fecha seleccionada.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="mt-4 flex justify-end">
+                        <button
+                            onClick={() =>
+                                setDuplicateTicketModalOpen(
+                                    false
+                                )
+                            }
+                            className="rounded-xl bg-[#1d4ed8] px-4 py-2 text-white transition hover:bg-[#2563eb]"
+                        >
+                            Entendido
                         </button>
                     </div>
                 </DialogContent>
