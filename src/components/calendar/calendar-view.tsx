@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import Image from "next/image";
 
 import {
     Dialog,
@@ -36,6 +37,9 @@ type Coordination = {
     medio: string;
     observaciones: string;
     created_by?: string;
+    napeado?: boolean;
+    dumas?: boolean;
+    captura?: boolean;
 };
 
 const initialForm = {
@@ -192,8 +196,18 @@ export function CalendarView() {
                     item.medio || "WhatsApp",
                 observaciones:
                     item.observations || "",
+
                 created_by:
                     item.created_by || "",
+
+                napeado:
+                    item.napeado || false,
+
+                dumas:
+                    item.dumas || false,
+
+                captura:
+                    item.captura || false,
             }));
 
         setCoordinations(formattedData);
@@ -292,6 +306,26 @@ export function CalendarView() {
             fetchCoordinations();
         }
     }, [selectedDate]);
+
+    async function toggleTask(
+        id: string,
+        field: "napeado" | "dumas" | "captura",
+        value: boolean
+    ) {
+        const { error } = await supabase
+            .from("coordinations")
+            .update({
+                [field]: value,
+            })
+            .eq("id", id);
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        fetchCoordinations();
+    }
 
     function openCreateModal() {
         setEditingId(null);
@@ -500,12 +534,94 @@ export function CalendarView() {
                                                 >
                                                     <AccordionTrigger className="px-5 py-4 hover:no-underline">
                                                         <div className="flex w-full items-center justify-between pr-4">
-                                                            <span className="text-sm font-semibold uppercase tracking-wide text-[#7dd3fc]">
-                                                                {groupName}
-                                                            </span>
+                                                            <div className="flex items-center gap-6">
+                                                                <span className="text-sm font-semibold uppercase tracking-wide text-[#7dd3fc]">
+                                                                    {groupName}
+                                                                </span>
 
-                                                            <div className="rounded-full bg-[#1e293b] px-3 py-1 text-xs text-slate-300">
-                                                                {items.length} casos
+                                                                {items[0] && (
+                                                                    <>
+                                                                        <label
+                                                                            className={`flex items-center gap-2 text-xs ${items[0].napeado
+                                                                                ? "text-emerald-400"
+                                                                                : "text-slate-300"
+                                                                                }`}
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={items[0].napeado || false}
+                                                                                onChange={(e) =>
+                                                                                    toggleTask(
+                                                                                        items[0].id,
+                                                                                        "napeado",
+                                                                                        e.target.checked
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                            Napeado
+                                                                        </label>
+
+                                                                        <label
+                                                                            className={`flex items-center gap-2 text-xs ${items[0].dumas
+                                                                                ? "text-emerald-400"
+                                                                                : "text-slate-300"
+                                                                                }`}
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={items[0].dumas || false}
+                                                                                onChange={(e) =>
+                                                                                    toggleTask(
+                                                                                        items[0].id,
+                                                                                        "dumas",
+                                                                                        e.target.checked
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                            Dumas
+                                                                        </label>
+
+                                                                        <label
+                                                                            className={`flex items-center gap-2 text-xs ${items[0].captura
+                                                                                ? "text-emerald-400"
+                                                                                : "text-slate-300"
+                                                                                }`}
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={items[0].captura || false}
+                                                                                onChange={(e) =>
+                                                                                    toggleTask(
+                                                                                        items[0].id,
+                                                                                        "captura",
+                                                                                        e.target.checked
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                            Captura
+                                                                        </label>
+                                                                    </>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="flex items-center gap-3">
+                                                                {items.some(
+                                                                    (item) =>
+                                                                        item.zona === "Favorita" ||
+                                                                        item.zona === "Castrol"
+                                                                ) && (
+                                                                        <Image
+                                                                            src="/icons/huawei.png"
+                                                                            alt="Huawei"
+                                                                            width={42}
+                                                                            height={42}
+                                                                            className="object-contain"
+                                                                        />
+                                                                    )}
+
+                                                                <div className="rounded-full bg-[#1e293b] px-3 py-1 text-xs text-slate-300">
+                                                                    {items.length} casos
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </AccordionTrigger>
@@ -552,8 +668,27 @@ export function CalendarView() {
                                                                                 {coordination.horario}
                                                                             </p>
                                                                         </div>
-                                                                    </div>
 
+                                                                        <div>
+                                                                            <p className="text-xs text-slate-500">
+                                                                                Cliente
+                                                                            </p>
+
+                                                                            <p className="text-sm text-slate-300">
+                                                                                {coordination.cliente}
+                                                                            </p>
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <p className="text-xs text-slate-500">
+                                                                                Categoría
+                                                                            </p>
+
+                                                                            <p className="text-sm text-slate-300">
+                                                                                {coordination.categoria}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
                                                                     <div className="flex items-center gap-3">
                                                                         <div className="rounded-full bg-[#1e293b] px-3 py-1 text-xs font-medium text-slate-300">
                                                                             {coordination.created_by ||
