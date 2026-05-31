@@ -363,6 +363,24 @@ export function CalendarView() {
         fetchCoordinations();
     }
 
+    async function createNotification(
+        recipient: string,
+        message: string
+    ) {
+        if (!recipient.trim()) return;
+
+        await supabase
+            .from("notifications")
+            .insert({
+                recipient,
+                message,
+            });
+
+        await supabase.rpc(
+            "cleanup_notifications"
+        );
+    }
+
     function openCreateModal() {
         setEditingId(null);
 
@@ -397,6 +415,12 @@ export function CalendarView() {
     async function handleDeleteCoordination() {
         if (!selectedCoordination) return;
 
+        const originalUser =
+            selectedCoordination.created_by;
+
+        const ticketNumber =
+            selectedCoordination.ticket;
+
         const { error } = await supabase
             .from("coordinations")
             .delete()
@@ -409,6 +433,16 @@ export function CalendarView() {
             );
 
             return;
+        }
+
+        if (
+            originalUser &&
+            originalUser !== userName
+        ) {
+            await createNotification(
+                originalUser,
+                `${userName} eliminó el ticket ${ticketNumber}`
+            );
         }
 
         setDeleteModalOpen(false);
@@ -447,6 +481,11 @@ export function CalendarView() {
         }
 
         if (editingId) {
+            const originalCoordination =
+                coordinations.find(
+                    (c) => c.id === editingId
+                );
+
             const { error } = await supabase
                 .from("coordinations")
                 .update({
@@ -473,6 +512,18 @@ export function CalendarView() {
                 );
 
                 return;
+            }
+
+            if (
+                originalCoordination &&
+                originalCoordination.created_by &&
+                originalCoordination.created_by !==
+                userName
+            ) {
+                await createNotification(
+                    originalCoordination.created_by,
+                    `${userName} editó el ticket ${form.ticket}`
+                );
             }
         } else {
             const { error } = await supabase
@@ -562,7 +613,11 @@ export function CalendarView() {
                                 </p>
 
                                 <p className="mt-1 text-lg font-semibold text-[#7dd3fc]">
-                                    {selectedDate}
+                                    {selectedDate
+                                        ? new Date(
+                                            selectedDate + "T00:00:00"
+                                        ).toLocaleDateString("es-AR")
+                                        : ""}
                                 </p>
                             </div>
 

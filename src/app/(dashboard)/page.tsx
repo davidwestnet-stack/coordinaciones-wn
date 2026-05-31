@@ -15,6 +15,12 @@ export default function Home() {
   const [todayCount, setTodayCount] =
     useState(0);
 
+  const [pendingCount, setPendingCount] =
+    useState(0);
+
+  const [confirmedCount, setConfirmedCount] =
+    useState(0);
+
   useEffect(() => {
     async function loadStats() {
       const today = new Date()
@@ -24,7 +30,9 @@ export default function Home() {
       const { data, error } =
         await supabase
           .from("coordinations")
-          .select("id, coordination_date");
+          .select(
+            "id, coordination_date, estado"
+          );
 
       if (error) {
         console.error(
@@ -45,7 +53,27 @@ export default function Home() {
             today
         );
 
+      const pendingItems = data.filter(
+        (item: any) =>
+          item.coordination_date === today &&
+          item.estado?.toLowerCase() ===
+          "pendiente"
+      );
+
+      const confirmedItems = data.filter(
+        (item: any) =>
+          item.coordination_date === today &&
+          item.estado?.toLowerCase() ===
+          "confirmado"
+      );
+
       setTodayCount(todayItems.length);
+      setPendingCount(
+        pendingItems.length
+      );
+      setConfirmedCount(
+        confirmedItems.length
+      );
     }
 
     loadStats();
@@ -80,7 +108,7 @@ export default function Home() {
           </p>
 
           <h2 className="mt-3 text-3xl font-bold text-amber-400">
-            -
+            {pendingCount}
           </h2>
         </div>
 
@@ -90,7 +118,7 @@ export default function Home() {
           </p>
 
           <h2 className="mt-3 text-3xl font-bold text-emerald-400">
-            -
+            {confirmedCount}
           </h2>
         </div>
       </div>
