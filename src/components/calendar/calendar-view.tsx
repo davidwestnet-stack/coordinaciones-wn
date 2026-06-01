@@ -598,7 +598,7 @@ export function CalendarView() {
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="h-[95vh] w-[98vw] md:w-[95vw] max-w-[1400px] max-h-[95vh] overflow-hidden border border-[#1e293b] bg-[#111827] p-0 text-slate-100">
+                <DialogContent className="h-[95vh] w-[98vw] md:w-[95vw] md:max-w-[1400px] max-h-[95vh] overflow-hidden border border-[#1e293b] bg-[#111827] p-0 text-slate-100">
                     <div className="flex h-full flex-col lg:flex-row overflow-hidden">
                         <div
                             className={`flex h-full min-h-0 flex-1 flex-col p-6 ${selectedCoordination
@@ -961,7 +961,7 @@ export function CalendarView() {
                 open={openForm}
                 onOpenChange={setOpenForm}
             >
-                <DialogContent className="max-w-5xl border border-[#1e293b] bg-[#111827] text-slate-100">
+                <DialogContent className="max-h-[95vh] w-[95vw] md:w-auto md:max-w-5xl overflow-y-auto border border-[#1e293b] bg-[#111827] text-slate-100">
                     <DialogHeader>
                         <DialogTitle className="text-2xl text-slate-100">
                             {editingId
@@ -970,7 +970,7 @@ export function CalendarView() {
                         </DialogTitle>
                     </DialogHeader>
 
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                         <Input
                             label="Ticket"
                             value={form.ticket}
@@ -1090,7 +1090,7 @@ export function CalendarView() {
                         </div>
                     </div>
 
-                    <div className="mt-6 flex justify-end gap-3">
+                    <div className="mt-6 flex flex-col gap-3 md:flex-row md:justify-end">
                         <button
                             onClick={() =>
                                 setOpenForm(false)
