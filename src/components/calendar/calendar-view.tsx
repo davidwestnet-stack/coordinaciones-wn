@@ -599,7 +599,7 @@ export function CalendarView() {
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="h-[90vh] min-w-[1400px] max-h-[90vh] overflow-hidden border border-[#1e293b] bg-[#111827] p-0 text-slate-100">
-                    <div className="flex h-full overflow-hidden">
+                    <div className="flex h-full flex-col lg:flex-row overflow-hidden">
                         <div className="flex h-full min-h-0 flex-1 flex-col p-6">
                             <DialogHeader>
                                 <DialogTitle className="text-3xl text-slate-100">
@@ -764,9 +764,9 @@ export function CalendarView() {
                                                                             coordination
                                                                         )
                                                                     }
-                                                                    className="flex w-full items-center justify-between rounded-xl border border-[#334155] bg-[#111827] px-4 py-4 text-left transition hover:border-[#475569]"
+                                                                    className="flex flex-col lg:flex-row w-full items-start lg:items-center justify-between rounded-xl border border-[#334155] bg-[#111827] px-4 py-4 text-left transition hover:border-[#475569]"
                                                                 >
-                                                                    <div className="flex flex-wrap items-start gap-8">
+                                                                    <div className="grid w-full grid-cols-2 gap-4 lg:flex lg:flex-wrap lg:items-start lg:gap-8">
                                                                         <div>
                                                                             <p className="text-xs text-slate-500">
                                                                                 Ticket
@@ -817,7 +817,7 @@ export function CalendarView() {
                                                                             </p>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="flex items-center gap-3">
+                                                                    <div className="mt-4 flex w-full flex-wrap items-center gap-3 lg:mt-0 lg:w-auto">
                                                                         <div className="rounded-full bg-[#1e293b] px-3 py-1 text-xs font-medium text-slate-300">
                                                                             {coordination.created_by ||
                                                                                 "Sin usuario"}
@@ -846,7 +846,7 @@ export function CalendarView() {
                         </div>
 
                         {selectedCoordination && (
-                            <div className="w-[420px] shrink-0 overflow-y-auto border-l border-[#1e293b] bg-[#0f172a] p-6">
+                            <div className="w-full lg:w-[420px] shrink-0 overflow-y-auto border-t lg:border-t-0 lg:border-l border-[#1e293b] bg-[#0f172a] p-6">
                                 <div className="flex items-start justify-between pr-6">
                                     <div>
                                         <p className="text-xs uppercase tracking-wide text-slate-500">

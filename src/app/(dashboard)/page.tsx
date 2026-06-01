@@ -82,7 +82,7 @@ export default function Home() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-100">
+        <h1 className="text-2xl font-bold text-slate-100 md:text-3xl">
           Inicio
         </h1>
 
@@ -92,7 +92,7 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-[#1e293b] bg-[#111827] p-6">
+        <div className="rounded-2xl border border-[#1e293b] bg-[#111827] p-4 md:p-6">
           <p className="text-sm text-slate-400">
             Coordinaciones hoy
           </p>
@@ -102,7 +102,7 @@ export default function Home() {
           </h2>
         </div>
 
-        <div className="rounded-2xl border border-[#1e293b] bg-[#111827] p-6">
+        <div className="rounded-2xl border border-[#1e293b] bg-[#111827] p-4 md:p-6">
           <p className="text-sm text-slate-400">
             Pendientes
           </p>
@@ -112,7 +112,7 @@ export default function Home() {
           </h2>
         </div>
 
-        <div className="rounded-2xl border border-[#1e293b] bg-[#111827] p-6">
+        <div className="rounded-2xl border border-[#1e293b] bg-[#111827] p-4 md:p-6">
           <p className="text-sm text-slate-400">
             Confirmadas
           </p>
@@ -123,7 +123,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#1e293b] bg-[#111827] p-6">
+      <div className="rounded-2xl border border-[#1e293b] bg-[#111827] p-4 md:p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-100">

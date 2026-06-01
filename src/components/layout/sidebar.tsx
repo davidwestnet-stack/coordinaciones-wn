@@ -104,7 +104,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex min-h-screen min-w-64 w-64 flex-col border-r border-[#1e293b] bg-[#0f172a]">
+    <aside className="hidden w-64 flex-col border-r border-[#1e293b] bg-[#0f172a] md:flex">
       <div className="border-b border-[#1e293b] p-6">
         <h2 className="text-xl font-bold text-[#7dd3fc]">
           Coordinaciones WN

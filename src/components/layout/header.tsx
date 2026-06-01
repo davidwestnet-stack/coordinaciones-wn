@@ -123,7 +123,7 @@ export function Header() {
         </button>
 
         {notificationsOpen && (
-          <div className="absolute right-0 top-14 z-50 w-96 rounded-2xl border border-[#1e293b] bg-[#111827] shadow-xl">
+          <div className="absolute right-0 top-14 z-50 w-[95vw] max-w-md rounded-2xl border border-[#1e293b] bg-[#111827] shadow-xl">
             <div className="border-b border-[#1e293b] p-4">
               <h3 className="font-semibold text-slate-100">
                 Notificaciones
@@ -132,7 +132,7 @@ export function Header() {
 
             <div className="max-h-96 overflow-y-auto">
               {notifications.length ===
-              0 ? (
+                0 ? (
                 <div className="p-4 text-sm text-slate-400">
                   No hay
                   notificaciones.
@@ -167,7 +167,7 @@ export function Header() {
           </div>
         )}
 
-        <span className="text-sm font-medium text-slate-300">
+        <span className="hidden text-sm font-medium text-slate-300 sm:block">
           {userName}
         </span>
 
@@ -177,7 +177,7 @@ export function Header() {
         >
           <LogOut size={18} />
 
-          <span>
+          <span className="hidden sm:block">
             Cerrar sesión
           </span>
         </button>
