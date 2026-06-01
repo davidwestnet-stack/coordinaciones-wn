@@ -598,9 +598,14 @@ export function CalendarView() {
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="h-[90vh] min-w-[1400px] max-h-[90vh] overflow-hidden border border-[#1e293b] bg-[#111827] p-0 text-slate-100">
+                <DialogContent className="h-[95vh] w-[98vw] md:w-[95vw] max-w-[1400px] max-h-[95vh] overflow-hidden border border-[#1e293b] bg-[#111827] p-0 text-slate-100">
                     <div className="flex h-full flex-col lg:flex-row overflow-hidden">
-                        <div className="flex h-full min-h-0 flex-1 flex-col p-6">
+                        <div
+                            className={`flex h-full min-h-0 flex-1 flex-col p-6 ${selectedCoordination
+                                    ? "hidden lg:flex"
+                                    : "flex"
+                                }`}
+                        >
                             <DialogHeader>
                                 <DialogTitle className="text-3xl text-slate-100">
                                     Coordinaciones del día
