@@ -12,6 +12,8 @@ import { Sidebar } from "@/components/layout/sidebar";
 
 import { supabase } from "@/lib/supabase";
 
+import { Toaster } from "sonner";
+
 type Role =
   | "coordinador"
   | "supervisor"
@@ -111,6 +113,12 @@ export default function DashboardLayout({
           {children}
         </section>
       </div>
+
+    <Toaster
+      position="bottom-right"
+      richColors
+      duration={3000}
+    />
     </main>
   );
 }

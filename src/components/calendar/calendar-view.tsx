@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/accordion";
 
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 type Coordination = {
     id: string;
@@ -389,6 +390,54 @@ export function CalendarView() {
         setOpenForm(true);
     }
 
+    async function quickConfirm(
+        coordination: Coordination
+    ) {
+        const previousStatus =
+            coordination.estado;
+
+        const { error } = await supabase
+            .from("coordinations")
+            .update({
+                estado: "Confirmado",
+            })
+            .eq("id", coordination.id);
+
+        if (error) {
+            toast.error(
+                "No se pudo confirmar el ticket"
+            );
+
+            return;
+        }
+
+        await fetchCoordinations();
+
+        toast.success(
+            `Ticket ${coordination.ticket} confirmado`,
+            {
+                action: {
+                    label: "Deshacer",
+                    onClick: async () => {
+                        await supabase
+                            .from("coordinations")
+                            .update({
+                                estado:
+                                    previousStatus,
+                            })
+                            .eq(
+                                "id",
+                                coordination.id
+                            );
+
+                        await fetchCoordinations();
+                    },
+                },
+                duration: 3000,
+            }
+        );
+    }
+
     function openEditModal() {
         if (!selectedCoordination) return;
 
@@ -598,14 +647,22 @@ export function CalendarView() {
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="h-[95vh] w-[98vw] md:w-[95vw] md:max-w-[1400px] max-h-[95vh] overflow-hidden border border-[#1e293b] bg-[#111827] p-0 text-slate-100">
+                <DialogContent
+                    className={`h-[95vh] max-h-[95vh] overflow-hidden border border-[#1e293b] bg-[#111827] p-0 text-slate-100 transition-all duration-300 ${selectedCoordination
+                            ? "w-[1090px] max-w-[1090px]"
+                            : "w-[670px] max-w-[670px]"
+                        }`}
+                >
+
                     <div className="flex h-full flex-col lg:flex-row overflow-hidden">
+
                         <div
-                            className={`flex h-full min-h-0 flex-1 flex-col p-6 ${selectedCoordination
-                                    ? "hidden lg:flex"
-                                    : "flex"
-                                }`}
-                        >
+    className={`flex h-full min-h-0 flex-col p-6 ${
+        selectedCoordination
+            ? "flex-1"
+            : "w-full"
+    }`}
+>
                             <DialogHeader>
                                 <DialogTitle className="text-3xl text-slate-100">
                                     Coordinaciones del día
@@ -650,6 +707,8 @@ export function CalendarView() {
                                     className="w-full rounded-xl border border-[#334155] bg-[#111827] px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-[#2563eb] focus:outline-none"
                                 />
                             </div>
+
+
 
                             <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-3 pb-[220px]">
                                 <Accordion
@@ -769,72 +828,38 @@ export function CalendarView() {
                                                                             coordination
                                                                         )
                                                                     }
-                                                                    className="flex flex-col lg:flex-row w-full items-start lg:items-center justify-between rounded-xl border border-[#334155] bg-[#111827] px-4 py-4 text-left transition hover:border-[#475569]"
+                                                                    className="flex w-full items-center justify-between rounded-xl border border-[#334155] bg-[#111827] px-4 py-2 text-left transition hover:border-[#475569]"
                                                                 >
-                                                                    <div className="grid w-full grid-cols-2 gap-4 lg:flex lg:flex-wrap lg:items-start lg:gap-8">
-                                                                        <div>
-                                                                            <p className="text-xs text-slate-500">
-                                                                                Ticket
-                                                                            </p>
+                                                                    <div className="flex items-center gap-6 min-w-0">
+                                                                        <span className="font-semibold text-slate-100 shrink-0">
+                                                                            {coordination.ticket}
+                                                                        </span>
 
-                                                                            <p className="font-semibold text-slate-100">
-                                                                                {coordination.ticket}
-                                                                            </p>
-                                                                        </div>
-
-                                                                        <div>
-                                                                            <p className="text-xs text-slate-500">
-                                                                                Zona
-                                                                            </p>
-
-                                                                            <p className="text-sm text-slate-300">
-                                                                                {coordination.zona}
-                                                                            </p>
-                                                                        </div>
-
-                                                                        <div>
-                                                                            <p className="text-xs text-slate-500">
-                                                                                Horario
-                                                                            </p>
-
-                                                                            <p className="text-sm text-slate-300">
-                                                                                {coordination.horario}
-                                                                            </p>
-                                                                        </div>
-
-                                                                        <div>
-                                                                            <p className="text-xs text-slate-500">
-                                                                                Cliente
-                                                                            </p>
-
-                                                                            <p className="text-sm text-slate-300">
-                                                                                {coordination.cliente}
-                                                                            </p>
-                                                                        </div>
-
-                                                                        <div>
-                                                                            <p className="text-xs text-slate-500">
-                                                                                Categoría
-                                                                            </p>
-
-                                                                            <p className="text-sm text-slate-300">
-                                                                                {coordination.categoria}
-                                                                            </p>
-                                                                        </div>
+                                                                        <span className="truncate text-sm text-slate-300">
+                                                                            {coordination.categoria}
+                                                                        </span>
                                                                     </div>
-                                                                    <div className="mt-4 flex w-full flex-wrap items-center gap-3 lg:mt-0 lg:w-auto">
+
+                                                                    <div className="flex items-center gap-3 shrink-0">
                                                                         <div className="rounded-full bg-[#1e293b] px-3 py-1 text-xs font-medium text-slate-300">
                                                                             {coordination.created_by ||
                                                                                 "Sin usuario"}
                                                                         </div>
 
-                                                                        <span
-                                                                            className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(
+                                                                        <div
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+
+                                                                                quickConfirm(
+                                                                                    coordination
+                                                                                );
+                                                                            }}
+                                                                            className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition hover:opacity-80 ${getStatusColor(
                                                                                 coordination.estado
                                                                             )}`}
                                                                         >
                                                                             {coordination.estado}
-                                                                        </span>
+                                                                        </div>
                                                                     </div>
                                                                 </button>
                                                             ))}
@@ -954,6 +979,7 @@ export function CalendarView() {
                             </div>
                         )}
                     </div>
+
                 </DialogContent>
             </Dialog>
 
