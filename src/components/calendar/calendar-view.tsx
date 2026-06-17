@@ -649,20 +649,19 @@ export function CalendarView() {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent
                     className={`h-[95vh] max-h-[95vh] overflow-hidden border border-[#1e293b] bg-[#111827] p-0 text-slate-100 transition-all duration-300 ${selectedCoordination
-                            ? "w-[1090px] max-w-[1090px]"
-                            : "w-[670px] max-w-[670px]"
+                        ? "w-[1090px] max-w-[1090px]"
+                        : "w-[670px] max-w-[670px]"
                         }`}
                 >
 
                     <div className="flex h-full flex-col lg:flex-row overflow-hidden">
 
                         <div
-    className={`flex h-full min-h-0 flex-col p-6 ${
-        selectedCoordination
-            ? "flex-1"
-            : "w-full"
-    }`}
->
+                            className={`flex h-full min-h-0 flex-col p-6 ${selectedCoordination
+                                    ? "flex-1"
+                                    : "w-full"
+                                }`}
+                        >
                             <DialogHeader>
                                 <DialogTitle className="text-3xl text-slate-100">
                                     Coordinaciones del día
@@ -810,6 +809,26 @@ export function CalendarView() {
                                                                             className="object-contain"
                                                                         />
                                                                     )}
+
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+
+                                                                        const tickets = items
+                                                                            .map((item) => item.ticket)
+                                                                            .join(",");
+
+                                                                        navigator.clipboard.writeText(tickets);
+
+                                                                        toast.success(
+                                                                            `${items.length} tickets copiados`
+                                                                        );
+                                                                    }}
+                                                                    className="text-base transition hover:scale-110"
+                                                                    title="Copiar tickets"
+                                                                >
+                                                                    📋
+                                                                </button>
 
                                                                 <div className="rounded-full bg-[#1e293b] px-3 py-1 text-xs text-slate-300">
                                                                     {items.length} casos
