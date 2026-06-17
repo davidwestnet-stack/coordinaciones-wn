@@ -658,8 +658,8 @@ export function CalendarView() {
 
                         <div
                             className={`flex h-full min-h-0 flex-col p-6 ${selectedCoordination
-                                    ? "flex-1"
-                                    : "w-full"
+                                ? "flex-1"
+                                : "w-full"
                                 }`}
                         >
                             <DialogHeader>
@@ -847,7 +847,11 @@ export function CalendarView() {
                                                                             coordination
                                                                         )
                                                                     }
-                                                                    className="flex w-full items-center justify-between rounded-xl border border-[#334155] bg-[#111827] px-4 py-2 text-left transition hover:border-[#475569]"
+                                                                    className={`flex w-full items-center justify-between rounded-xl px-4 py-2 transition-all
+${selectedCoordination?.id === coordination.id
+                                                                            ? "border-[#2563eb] bg-[#172554] shadow-[0_0_0_1px_#2563eb]"
+                                                                            : "border-[#334155] bg-[#111827]"
+                                                                        }`}
                                                                 >
                                                                     <div className="flex items-center gap-6 min-w-0">
                                                                         <span className="font-semibold text-slate-100 shrink-0">
